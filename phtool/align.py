@@ -12,6 +12,7 @@ import logging
 import astropy.io.fits as fits
 import os
 import astroalign as aa
+from astropy.stats import sigma_clipped_stats
 
 
 def align(
@@ -35,12 +36,15 @@ def align(
     b_cat, _, _ = pkl_load(b_star_file)
     b_ix = np.argsort(b_cat["mag"])
     b_xy = np.c_[b_cat["xcentroid"], b_cat["ycentroid"]][b_ix[:ngood], :]
+    b_mag = b_cat["mag"][b_ix[:ngood]]
     # 文件数
     nf = len(filelist)
 
     # xy offset array
     trans = []
     bjd = np.empty(nf)
+    mag_diff_med = np.empty(nf)
+    mag_diff_std = np.empty(nf)
 
     # load images and process
     for k, fc in enumerate(filelist):
@@ -48,17 +52,22 @@ def align(
         bf, k_star_file = change_suffix(fc, "_stars", ".pkl")
         k_cat, _, _ = pkl_load(k_star_file)
         k_ix = np.argsort(k_cat["mag"])
-        k_xy = np.c_[k_cat["xcentroid"], k_cat["ycentroid"]][k_ix[:ngood], :] 
-        tr, _ = aa.find_transform(k_xy, b_xy)
+        k_xy = np.c_[k_cat["xcentroid"], k_cat["ycentroid"]][k_ix[:ngood], :]
+        k_mag = k_cat["mag"][k_ix[:ngood]]
+        tr, (k_ix, b_ix) = aa.find_transform(k_xy, b_xy)
         trans.append(tr)
+        # 计算两图之间的零点差
+        mag_diff = b_mag[b_ix] - k_mag[k_ix]
+        mag_diff_med[k], _, mag_diff_std[k] = sigma_clipped_stats(mag_diff)
 
         # mjd of obs
         bjd[k] = fits.getval(fc, "BJD")
 
         logger.debug(f"{k+1:03d}/{nf:03d}: {bjd[k]-245000:10.7f} "
-                   f"{tr.rotation:+5.1f} {tr.scale:4.2f} {tr.translation[0]:+6.1f} {tr.translation[1]:+6.1f}"
+                   f"R {tr.rotation:+5.1f}  S {tr.scale:4.2f}  T ({tr.translation[0]:+6.1f} {tr.translation[1]:+6.1f}) "
+                   f"M {mag_diff_med[k]:+6.2f}+-{mag_diff_std[k]:5.3f}"
                    f"  {bf}")
 
     # 保存align数据
-    pkl_dump(alignfile, bjd, trans, filelist, b_fn)
+    pkl_dump(alignfile, bjd, trans, filelist, b_fn, mag_diff_med, mag_diff_std)
     logger.debug(f"Writing {alignfile}")

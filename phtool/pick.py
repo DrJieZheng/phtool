@@ -49,7 +49,7 @@ def pick(
         return
 
     # 加载对齐结果
-    abjd, atrans, afilelist, abff = pkl_load(alignfile)
+    abjd, atrans, afilelist, abff, amag_diff_med, amag_diff_std = pkl_load(alignfile)
     abfilelist = [filename_split(f)[1] for f in afilelist]
     atransd = dict(zip(abfilelist, atrans))
     abjdd = dict(zip(abfilelist, abjd))
