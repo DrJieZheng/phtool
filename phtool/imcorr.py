@@ -11,8 +11,7 @@ import numpy as np
 import logging
 import astropy.io.fits as fits
 import os
-from astropy.coordinates import SkyCoord
-from astropy.coordinates import EarthLocation
+from astropy.coordinates import get_sun, get_body, EarthLocation, AltAz
 import astropy.units as u
 from astropy.time import Time
 from astropy.utils import iers
@@ -113,6 +112,20 @@ def imcorr(
             hdr["BJD"] = np.nan
         hdr["JD"] = obs_jd.jd
         hdr["MJD"] = obs_jd.mjd
+        # 观测时的太阳月亮信息
+        sun = get_sun(obs_jd)
+        sun_altaz = sun.transform_to(AltAz(obstime=obs_jd, location=site))
+        moon = get_body('moon', obs_jd)
+        moon_altaz = moon.transform_to(AltAz(obstime=obs_jd, location=site))
+        # 添加到文件头
+        hdr["SUN_ALT"] = sun_altaz.alt.deg
+        hdr["SUN_AZ"] = sun_altaz.az.deg
+        hdr["MOON_ALT"] = moon_altaz.alt.deg
+        hdr["MOON_AZ"] = moon_altaz.az.deg
+        hdr["SUN_RA"] = sun.ra.to_string(unit=u.hour, sep=':', precision=2)
+        hdr["SUN_DEC"] = sun.dec.to_string(unit=u.deg, sep=":",precision=1)
+        hdr["MOON_RA"] = moon.ra.to_string(unit=u.hour, sep=':', precision=2)
+        hdr["MOON_DEC"] = moon.dec.to_string(unit=u.deg, sep=":",precision=1)
         # 新文件名
         p, fn, suff, e = filename_split(f)
         f_corr = os.path.join(outdir, fn+"_corr"+e)

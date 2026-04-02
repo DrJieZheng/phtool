@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    v0 20250607, Dr/Prof Jie Zheng & Dr/Prof Linqiao Jiang
+    v0 20250607, Dr/AssoProf Jie Zheng & Dr/Prof Linqiao Jiang
     Photometry Tools
 """
 
