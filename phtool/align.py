@@ -57,8 +57,8 @@ def align(
         tr, (k_ix, b_ix) = aa.find_transform(k_xy, b_xy)
         trans.append(tr)
         # 计算两图之间的零点差
-        mag_diff = b_mag[b_ix] - k_mag[k_ix]
-        mag_diff_med[k], _, mag_diff_std[k] = sigma_clipped_stats(mag_diff)
+        # mag_diff = b_mag[b_ix] - k_mag[k_ix]
+        # mag_diff_med[k], _, mag_diff_std[k] = sigma_clipped_stats(mag_diff)
 
         # mjd of obs
         bjd[k] = fits.getval(fc, "BJD")

@@ -11,7 +11,7 @@ import numpy as np
 import logging
 import astropy.io.fits as fits
 import os
-from astropy.coordinates import get_sun, get_body, EarthLocation, AltAz
+from astropy.coordinates import SkyCoord, get_sun, get_body, EarthLocation, AltAz
 import astropy.units as u
 from astropy.time import Time
 from astropy.utils import iers

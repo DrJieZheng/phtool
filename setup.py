@@ -5,7 +5,7 @@ with open("readme.md", "r", encoding="utf-8") as ff:
 
 setuptools.setup(
     name='phtool',
-    version='0.26.401',
+    version='0.26.404',
     author='Dr/AssoProf Jie Zheng & Dr/Prof Lin-Qiao Jiang',
     author_email='jiezheng@nao.cas.cn',
     description='Photometry Tools', # short description
@@ -19,7 +19,7 @@ setuptools.setup(
         'console_scripts': ['phtool = phtool.__main__:main',],
     },
     # package_data={"phtool": ["default.*", "bright.*",]},
-    python_requires='>=3.10',
+    python_requires='>=3.8',
     classifiers=[
         # "Development Status :: 5 - Production/Stable",
         "Development Status :: 3 - Alpha",
