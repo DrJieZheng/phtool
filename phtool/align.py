@@ -6,15 +6,6 @@
 """
 
 
-from .util import filename_split, change_suffix, pkl_dump, pkl_load
-import numpy as np
-import logging
-import astropy.io.fits as fits
-import os
-import astroalign as aa
-from astropy.stats import sigma_clipped_stats
-
-
 def align(
     filelist, 
     alignfile,
@@ -27,6 +18,15 @@ def align(
     :param baseix: 基准图像索引
     :return: 无
     """
+
+    from .util import filename_split, change_suffix, pkl_dump, pkl_load
+    import numpy as np
+    import logging
+    import astropy.io.fits as fits
+    import os
+    import astroalign as aa
+    from astropy.stats import sigma_clipped_stats
+
     logger = logging.getLogger("phtool_main")
     # 选多少星进行处理
     ngood = 100

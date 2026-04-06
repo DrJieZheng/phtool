@@ -6,13 +6,6 @@
 """
 
 
-from .util import normfactor, combine, get_time, filename_split
-import numpy as np
-import logging
-import os
-import astropy.io.fits as fits
-
-
 def flatcomb(
     filelist, 
     biasfile, 
@@ -29,6 +22,13 @@ def flatcomb(
     :param norm: 平场归一化方法
     :return: 无
     """
+
+    from .util import normfactor, combine, get_time, filename_split
+    import numpy as np
+    import logging
+    import os
+    import astropy.io.fits as fits
+
     logger = logging.getLogger("phtool_main")
     # 加载合并后的本底
     masterbias = fits.getdata(biasfile)

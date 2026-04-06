@@ -3,17 +3,19 @@
     v0 20250607, Dr/AssoProf Jie Zheng & Dr/Prof Linqiao Jiang
     publish v0.1 20250717
     v0.2 0.26.401
+    v0.2 0.26.405
     Photometry Tools
 """
 
 
-from ast import parse
+# from ast import parse
 import sys
 import argparse
 import os
 import glob
 import logging
 from .util import filename_split, ext_check
+version = "0.26.405"
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -77,7 +79,10 @@ def main():
     """
     if len(sys.argv) == 1:
         print("""Photometry Tools
-Usage: python -m phtool command arguments
+Usage:
+    python -m phtool command arguments
+    phtool command arguments
+    import phtool; phtool.xxx(xxxx)
 Commands:
     biascombine
         py -m phtool biascombine
@@ -85,7 +90,11 @@ Commands:
     else:
         # cmd = _short_match_(sys.argv[1])
         # parse arguments
-        parser = argparse.ArgumentParser(description="Photometry Tools")
+        parser = argparse.ArgumentParser(
+            prog="Photometry Tools (phtool)",
+            description="Photometry Tools (phtool)",
+        )
+        parser.add_argument("-v", "--version", action='version', version=f"%(prog)s v{version}")
         parser.add_argument("task", type=str, nargs=1,
             help="Task to run")
         parser.add_argument("--whenexist", type=str.lower, nargs="?", default="autonum",

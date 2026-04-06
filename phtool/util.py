@@ -9,7 +9,6 @@
 import os
 import numpy as np
 import datetime
-from astropy.stats import sigma_clipped_stats
 import pickle
 import re
 
@@ -125,6 +124,7 @@ def normfactor(dat, norm="clip"):
     elif norm == "median":
         res = np.nanmedian(dat)
     elif norm == "clip":
+        from astropy.stats import sigma_clipped_stats
         res, _, _ = sigma_clipped_stats(dat)
     return res
 

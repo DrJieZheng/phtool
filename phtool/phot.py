@@ -6,17 +6,6 @@
 """
 
 
-from .util import filename_split, pkl_dump, pkl_load
-import numpy as np
-import logging
-import astropy.io.fits as fits
-import matplotlib.pyplot as plt
-import os
-import glob
-from photutils.background import Background2D, MMMBackground
-from photutils.aperture import CircularAperture, aperture_photometry
-
-
 def phot(
     filelist,
     apers,
@@ -27,6 +16,17 @@ def phot(
     :param apers: 测光孔径
     :return: 无
     """
+
+    from .util import filename_split, pkl_dump, pkl_load
+    import numpy as np
+    import logging
+    import astropy.io.fits as fits
+    import matplotlib.pyplot as plt
+    import os
+    import glob
+    from photutils.background import Background2D, MMMBackground
+    from photutils.aperture import CircularAperture, aperture_photometry
+
     logger = logging.getLogger("phtool_main")
     # 让apers是数组
     if isinstance(apers, (int, float)):

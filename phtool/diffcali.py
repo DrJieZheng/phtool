@@ -6,13 +6,6 @@
 """
 
 
-from .util import filename_split, pkl_dump, pkl_load
-import numpy as np
-import logging
-import matplotlib.pyplot as plt
-from astropy.stats import sigma_clipped_stats
-
-
 def diffcali(
     pickfile, 
     califile,
@@ -29,6 +22,13 @@ def diffcali(
     :param chk_idx: 检查星索引
     :return: 无
     """
+
+    from .util import filename_split, pkl_dump, pkl_load
+    import numpy as np
+    import logging
+    import matplotlib.pyplot as plt
+    from astropy.stats import sigma_clipped_stats
+
     logger = logging.getLogger("phtool_main")
 
     # 读取数据

@@ -5,10 +5,12 @@
     v0 20250607, Dr/AssoProf Jie Zheng & Dr/Prof Linqiao Jiang
     publish v0.1 20250717
     v0.2 0.26.401
+    v0.2 0.26.405
     Photometry Tools
 """
 
 
+version = "0.26.405"
 from .biascomb import biascomb
 from .flatcomb import flatcomb
 from .imcorr import imcorr

@@ -6,19 +6,6 @@
 """
 
 
-from .util import filename_split, pkl_dump, pkl_load
-import numpy as np
-import logging
-import astropy.io.fits as fits
-import matplotlib.pyplot as plt
-import os
-import glob
-from photutils.background import Background2D, MMMBackground
-from photutils.aperture import CircularAperture, aperture_photometry
-from astropy.stats import sigma_clipped_stats
-from matplotlib.widgets import Button, Slider
-
-
 def xyget(
     filelist,
     baseix=0,
@@ -35,6 +22,19 @@ def xyget(
     :param display: 是否最后在屏幕显示结果，适用于从终端调用的情况
     :return: 选中的源的x、y数组
     """
+
+    from .util import filename_split, pkl_dump, pkl_load
+    import numpy as np
+    import logging
+    import astropy.io.fits as fits
+    import matplotlib.pyplot as plt
+    import os
+    import glob
+    from photutils.background import Background2D, MMMBackground
+    from photutils.aperture import CircularAperture, aperture_photometry
+    from astropy.stats import sigma_clipped_stats
+    from matplotlib.widgets import Button, Slider
+
     logger = logging.getLogger("phtool_main")
     # 确定具体文件名
     basefile = filelist[baseix]

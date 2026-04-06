@@ -6,13 +6,6 @@
 """
 
 
-from .util import combine, get_time, filename_split
-import numpy as np
-import logging
-import astropy.io.fits as fits
-import os
-
-
 def biascomb(
     filelist, 
     biasfile, 
@@ -25,6 +18,13 @@ def biascomb(
     :param method: 合并方法
     :return: 无
     """
+
+    from .util import combine, get_time, filename_split
+    import numpy as np
+    import logging
+    import astropy.io.fits as fits
+    import os
+
     logger = logging.getLogger("phtool_main")
     # 获取头信息
     hdr = fits.getheader(filelist[0])

@@ -6,18 +6,6 @@
 """
 
 
-from .util import get_time, filename_split, sitelib
-import numpy as np
-import logging
-import astropy.io.fits as fits
-import os
-from astropy.coordinates import SkyCoord, get_sun, get_body, EarthLocation, AltAz
-import astropy.units as u
-from astropy.time import Time
-from astropy.utils import iers
-iers.conf.auto_download = False
-
-
 def imcorr(
     filelist, 
     biasfile, 
@@ -39,6 +27,19 @@ def imcorr(
     :param sitecoord: 观测地点坐标
     :return: 无
     """
+
+    from enum import verify
+    from .util import get_time, filename_split, sitelib
+    import numpy as np
+    import logging
+    import astropy.io.fits as fits
+    import os
+    from astropy.coordinates import SkyCoord, get_sun, get_body, EarthLocation, AltAz
+    import astropy.units as u
+    from astropy.time import Time
+    from astropy.utils import iers
+    iers.conf.auto_download = False
+
     logger = logging.getLogger("phtool_main")
     # 加载合并后的本底和平场
     masterbias = fits.getdata(biasfile)
@@ -61,9 +62,13 @@ def imcorr(
     os.makedirs(outdir, exist_ok=True)
     for f in filelist:
         # 读取文件
-        dat = fits.getdata(f)
-        hdr = fits.getheader(f)
-        _ = f"{hdr}"
+        with fits.open(f, verify="ignore") as hdul:
+            hdul[0].verify("fix")
+            dat = hdul[0].data
+            hdr = hdul[0].header
+        # dat = fits.getdata(f)
+        # hdr = fits.getheader(f)
+        # _ = f"{hdr}"
         # 扣除本底
         dat_corr = (dat - masterbias) / masterflat
         # 坐标信息：hdr中的RA/Dec--hdr中的CRVAL1/2--hdr中指定的字段--参数中的字段--nan

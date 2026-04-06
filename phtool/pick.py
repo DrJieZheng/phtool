@@ -6,16 +6,6 @@
 """
 
 
-from .util import change_suffix, filename_split, pkl_dump, pkl_load
-import numpy as np
-import logging
-import astropy.io.fits as fits
-import matplotlib.pyplot as plt
-import os
-from scipy.spatial import cKDTree
-from qmatch import match2d
-
-
 def pick(
     filelist,
     alignfile,
@@ -34,6 +24,16 @@ def pick(
     :param xyfile: 源位置文件
     :return: 无
     """
+
+    from .util import change_suffix, filename_split, pkl_dump, pkl_load
+    import numpy as np
+    import logging
+    import astropy.io.fits as fits
+    import matplotlib.pyplot as plt
+    import os
+    from scipy.spatial import cKDTree
+    from qmatch import match2d
+
     logger = logging.getLogger("phtool_main")
 
     # 如果没有xy坐标，那么就现场读

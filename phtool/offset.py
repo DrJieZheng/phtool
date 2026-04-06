@@ -6,16 +6,6 @@
 """
 
 
-from .util import filename_split, pkl_dump
-import numpy as np
-import logging
-import astropy.io.fits as fits
-import matplotlib.pyplot as plt
-import os
-import qmatch
-from datetime import datetime
-
-
 def offset(
     filelist, 
     offsetfile,
@@ -30,6 +20,16 @@ def offset(
     :param maxoffset: 最大偏移
     :return: 无
     """
+
+    from .util import filename_split, pkl_dump
+    import numpy as np
+    import logging
+    import astropy.io.fits as fits
+    import matplotlib.pyplot as plt
+    import os
+    import qmatch
+    from datetime import datetime
+
     logger = logging.getLogger("phtool_main")
     # load base image
     logger.debug(f"Loading base image: {filelist[baseix]}")

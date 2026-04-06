@@ -6,21 +6,6 @@
 """
 
 
-from .util import filename_split, pkl_dump
-import numpy as np
-import logging
-import astropy.io.fits as fits
-import matplotlib.pyplot as plt
-import os
-from scipy.optimize import curve_fit
-from astropy.stats import sigma_clipped_stats
-# import glob
-# from astropy.stats import SigmaClip
-from photutils.background import Background2D, MMMBackground
-from photutils.detection import DAOStarFinder
-# from photutils.aperture import CircularAperture #, ApertureStats
-
-
 def find(
     filelist, 
 ):
@@ -29,6 +14,21 @@ def find(
     :param filelist: 待找源的文件列表
     :return: 无
     """
+
+    from .util import filename_split, pkl_dump
+    import numpy as np
+    import logging
+    import astropy.io.fits as fits
+    import matplotlib.pyplot as plt
+    import os
+    from scipy.optimize import curve_fit
+    from astropy.stats import sigma_clipped_stats
+    # import glob
+    # from astropy.stats import SigmaClip
+    from photutils.background import Background2D, MMMBackground
+    from photutils.detection import DAOStarFinder
+    # from photutils.aperture import CircularAperture #, ApertureStats
+
     logger = logging.getLogger("phtool_main")
 
     def gauss2(xy, amplitude, x_mean, y_mean, stddev2):
