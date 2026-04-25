@@ -77,7 +77,7 @@ def pick(
         sources, _, _, _ = pkl_load(phot_pkl_file)
         # 找偏移
         k_xy = np.c_[sources["xcentroid"], sources["ycentroid"]]
-        bjd[k] = abjdd.get(bf, np.nan)-2450000.0
+        bjd[k] = abjdd.get(bf, np.nan)
         tr = atransd.get(bf, None)
         # 把目标星转换到基准框架，然后匹配
         if tr:
@@ -97,15 +97,15 @@ def pick(
         with open(f"{picktxt}_{a:04.1f}.txt", "w") as ff:
             # 表头
             ff.write(f"# {bf0}\n")
-            ff.write("# BJD-245000.0\n")
+            ff.write("# BJD-2450000.0\n")
             for j, (x, y) in enumerate(zip(x0, y0)):
                 ff.write(f"# {j+1:2d}  {x:6.1f} {y:6.1f}\n")
             # 数据
-            for f in range(len(filelist)):
-                ff.write(f"{bjd[f]-245000:13.7f}")
+            for j, f in enumerate(filelist):
+                ff.write(f"{bjd[j]:13.7f}")
                 for s in range(n_star):
-                    ff.write(f" {mag_cube[f, s, i]:6.3f}")
-                ff.write(f" {bff[i]}\n")
+                    ff.write(f" {mag_cube[j, s, i]:6.3f} +- {magerr_cube[j, s, i]:6.3f}")
+                ff.write(f" {bff[j]}\n")
     # 输出日志
     logger.info(f"{n_star} sources, {n_aper} apers, {len(filelist)} files")
 

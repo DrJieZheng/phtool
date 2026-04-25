@@ -2,8 +2,7 @@
 """
     v0 20250607, Dr/AssoProf Jie Zheng & Dr/Prof Linqiao Jiang
     publish v0.1 20250717
-    v0.2 0.26.401
-    v0.2 0.26.405
+    v0.2 0.26.425
     Photometry Tools
 """
 
@@ -15,7 +14,7 @@ import os
 import glob
 import logging
 from .util import filename_split, ext_check
-version = "0.26.405"
+version = "0.26.425"
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -24,6 +23,7 @@ warnings.filterwarnings('ignore')
 def _short_match_(s):
     """用短名字匹配命令"""
     tasks = [
+        "cutimage",
         "biascombine",
         "flatcombine",
         "imcorrect",
@@ -32,6 +32,7 @@ def _short_match_(s):
         "align",
         "phot",
         "xyget",
+        "display",
         "pick",
         "diffcali",
     ]
@@ -84,8 +85,26 @@ Usage:
     phtool command arguments
     import phtool; phtool.xxx(xxxx)
 Commands:
+    cutimage
+        py -m phtool cutimage
     biascombine
         py -m phtool biascombine
+    flatcombine
+        py -m phtool flatcombine
+    imcorrect
+        py -m phtool imcorrect
+    offset
+        py -m phtool offset
+    find
+        py -m phtool find
+    align
+        py -m phtool align
+    phot
+        py -m phtool phot
+    xyget
+        py -m phtool xyget
+    display
+        py -m phtool display
 """)
     else:
         # cmd = _short_match_(sys.argv[1])
@@ -107,7 +126,7 @@ Commands:
             help="Raw data files")
         parser.add_argument("-l", "--list", type=str, nargs="?", default=None,
             help="Raw data list")
-        parser.add_argument("-o", "--outdir", type=str, nargs="?", default="./",
+        parser.add_argument("-o", "--out-dir", type=str, nargs="?", default="./",
             help="Output directory")
         parser.add_argument("--bias", type=str, nargs="?", default=None,
             help="Master bias filename")
@@ -119,6 +138,14 @@ Commands:
         parser.add_argument("--norm", type=str.lower, nargs="?", default="clip",
             choices=["clip", "median", "mean", "avg", "average"],
             help="Flat normalizing method")
+        parser.add_argument("--cut-x", type=float, nargs="*", default=None,
+            help="X range for cutting image")
+        parser.add_argument("--cut-y", type=float, nargs="*", default=None,
+            help="Y range for cutting image")
+        parser.add_argument("--cut-w", type=int, nargs="?", default=None,
+            help="Width for cutting image")
+        parser.add_argument("--cut-h", type=int, nargs="?", default=None,
+            help="Height for cutting image")
         parser.add_argument("--radec", type=str, nargs="?", default=None,
             help="RA and Dec of the target, e.g. '12:34:56.78,-12:34:56.78' or '12.3456,+23.4567'")
         parser.add_argument("--keyradec", type=str, nargs="?", default=None,
@@ -137,6 +164,12 @@ Commands:
             help="Align file")
         parser.add_argument("--apers", type=float, nargs="*", default=[-2.5],
             help="Aperture(s) for photometry")
+        parser.add_argument("--show-x", type=float, nargs="*", default=None,
+            help="X range for display image")
+        parser.add_argument("--show-y", type=float, nargs="*", default=None,
+            help="Y range for display image")
+        parser.add_argument("--show-n", type=int, nargs="?", default=25,
+            help="No of stars to display in the image")
         parser.add_argument("--xyfile", type=str, nargs="?", default=None,
             help="XY file of selected sources")
         parser.add_argument("--pickbox", type=float, nargs="?", default=20,
@@ -181,7 +214,12 @@ Commands:
             efiles.extend(glob.glob(os.path.expanduser(f)))
         efiles.sort()
 
-        if task == "biascombine":
+        if task == "cutimage":
+            # 截取图像
+            from .cutimage import cutimage
+            # print(task, args.show_x, args.show_y, args.out_dir)
+            cutimage(efiles, args.out_dir, args.cut_x, args.cut_y, args.cut_w, args.cut_h)
+        elif task == "biascombine":
             # 合并本底
             # 处理合并后的文件名
             biasfile = _out_dir_file_(args.bias, "BIAS", ".fits")
@@ -204,8 +242,8 @@ Commands:
             sitename = args.sitename
             sitecoord = args.sitecoord
             from .imcorr import imcorr
-            # print(task, efiles, biasfile, flatfile, args.outdir)
-            imcorr(efiles, biasfile, flatfile, args.outdir, 
+            # print(task, efiles, biasfile, flatfile, args.out_dir)
+            imcorr(efiles, biasfile, flatfile, args.out_dir, 
                 keyradec=keyradec, radec=radec, 
                 sitename=sitename, sitecoord=sitecoord)
         elif task == "offset":
@@ -236,6 +274,10 @@ Commands:
             xyfile = args.xyfile
             from .xyget import xyget
             xyget(efiles, baseix=baseix, pickbox=pickbox, xyfile=xyfile, display=True)
+        elif task == "display":
+            # 显示图像，并根据需要截取部分区域，进行人工选星
+            from .disp import disp
+            disp(efiles, show_x=args.show_x, show_y=args.show_y, show_n=args.show_n)
         elif task == "pick":
             # 选择目标星
             baseix = args.baseix

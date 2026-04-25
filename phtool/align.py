@@ -54,14 +54,22 @@ def align(
         k_ix = np.argsort(k_cat["mag"])
         k_xy = np.c_[k_cat["xcentroid"], k_cat["ycentroid"]][k_ix[:ngood], :]
         k_mag = k_cat["mag"][k_ix[:ngood]]
-        tr, (k_ix, b_ix) = aa.find_transform(k_xy, b_xy)
+        # mjd of obs
+        bjd[k] = fits.getval(fc, "BJD")
+        try:
+            tr, (k_ix, b_ix) = aa.find_transform(k_xy, b_xy)
+        except:
+            logger.error(f"{k+1:03d}/{nf:03d}: {bjd[k]-245000:10.7f} Failed to align {bf}")
+            trans.append(None)
+            bjd[k] = np.nan
+            mag_diff_med[k] = np.nan
+            mag_diff_std[k] = np.nan
+            continue
         trans.append(tr)
+
         # 计算两图之间的零点差
         # mag_diff = b_mag[b_ix] - k_mag[k_ix]
         # mag_diff_med[k], _, mag_diff_std[k] = sigma_clipped_stats(mag_diff)
-
-        # mjd of obs
-        bjd[k] = fits.getval(fc, "BJD")
 
         logger.debug(f"{k+1:03d}/{nf:03d}: {bjd[k]-245000:10.7f} "
                    f"R {tr.rotation:+5.1f}  S {tr.scale:4.2f}  T ({tr.translation[0]:+6.1f} {tr.translation[1]:+6.1f}) "

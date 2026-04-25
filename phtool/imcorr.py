@@ -10,7 +10,7 @@ def imcorr(
     filelist, 
     biasfile, 
     flatfile, 
-    outdir,
+    out_dir="./",
     keyradec=None,
     radec=None,
     sitename="xinglong",
@@ -59,7 +59,7 @@ def imcorr(
     site = EarthLocation(lon=sitelon, lat=sitelat)
 
     # 逐个进行平场改正
-    os.makedirs(outdir, exist_ok=True)
+    os.makedirs(out_dir, exist_ok=True)
     for f in filelist:
         # 读取文件
         with fits.open(f, verify="ignore") as hdul:
@@ -133,6 +133,6 @@ def imcorr(
         hdr["MOON_DEC"] = moon.dec.to_string(unit=u.deg, sep=":",precision=1)
         # 新文件名
         p, fn, suff, e = filename_split(f)
-        f_corr = os.path.join(outdir, fn+"_corr"+e)
+        f_corr = os.path.join(out_dir, fn+"_corr"+e)
         fits.writeto(f_corr, dat_corr, hdr, overwrite=True)
-        logger.debug(f"Correct {f} -> {f_corr}")
+        logger.info(f"Correct {f} -> {f_corr}")

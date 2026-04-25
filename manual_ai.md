@@ -283,7 +283,51 @@ from phtool.phot import phot
 phot(["corrected/sci1_corr.fits", "corrected/sci2_corr.fits"], apers=[-2.5, -3.5])
 ```
 
-### 4.8 xyget - 可视化选星
+### 4.8 display - 图像选星
+
+#### 功能描述
+显示图像以及找到的星，供用户人工选星。
+
+#### 终端调用模式
+```bash
+python -m phtool display [图像文件] --disp-x [x坐标范围] --disp-y [y坐标范围] --disp-n [显示数量]
+```
+
+**参数说明**：
+- `图像文件`：需要选星的图像
+- `--disp-x`：x坐标范围，默认为None
+- `--disp-y`：y坐标范围，默认为None
+- `--disp-n`：显示数量，默认为25
+
+**示例**：
+```bash
+python -m phtool display corrected/*fits --disp-x 0 1 --disp-y 0 1 --disp-n 100
+```
+
+#### 函数调用模式
+```python
+from phtool.display import display
+
+# 参数说明：
+# filelist: 待显示的文件列表，只会显示第一个文件
+# show_x: x坐标范围，默认为None
+# show_y: y坐标范围，默认为None
+# show_n: 显示数量，默认为25
+display(["corrected/sci1_corr.fits"], show_x=[0, 1], show_y=[0, 1], show_n=100)
+```
+
+`disp-x`、`disp-y` 分别表示x坐标范围、y坐标范围，允许以下描述方式：
+- `None`：全画面
+- `0.3`，或者`[0.3]`：单个值，表示从左（下）0.3*图像宽度（高度）到右（上）0.3*图像宽度（高度）
+- `[100, 200]`：两个值，从100到200的范围。如果超过两个值，前两个有效
+
+取值范围：
+- `0.3`：0～1（包括1）之间的正小数，表示宽度（高度）的倍数
+- `100`：大于1的数，表示具体位置，可以是浮点数
+- `-0.1`：-1～0之间的负小数，表示宽度（高度）的倍数，从右边数起，相当于`(1-0.1)`
+- `-100`：小于-1的数，表示具体位置，从右边数起，相当于`(nsize-100)`
+
+### 4.9 xyget - 可视化选星
 
 #### 功能描述
 可视化模式下选择目标星。
@@ -317,7 +361,7 @@ from phtool.xyget import xyget
 bf, x, y = xyget(["corrected/sci1_corr.fits", "corrected/sci2_corr.fits"], baseix=0, pickbox=20, xyfile="selected_stars.txt", display=True)
 ```
 
-### 4.9 pick - 从测光结果中选星
+### 4.10 pick - 从测光结果中选星
 
 #### 功能描述
 根据实现的选星结果，从phot结果中挑出想要的星。
@@ -354,7 +398,7 @@ from phtool.pick import pick
 pick(["corrected/sci1_corr.fits", "corrected/sci2_corr.fits"], "align.pkl", "pick.pkl", baseix=0, pickbox=20, xyfile="selected_stars.txt")
 ```
 
-### 4.10 diffcali - 较差分析
+### 4.11 diffcali - 较差分析
 
 #### 功能描述
 根据phot结果，进行不同指定的较差计算和绘图，可以指定目标。采用指定比较星的方式。
@@ -469,7 +513,7 @@ python -m phtool diffcali --pickfile pick.pkl --califile cali.pkl --tgtidx 0 --r
 
 ## 8. 依赖项
 
-- Python 3.6+
+- Python 3.8+
 - NumPy
 - Matplotlib
 - Astropy
@@ -477,8 +521,3 @@ python -m phtool diffcali --pickfile pick.pkl --califile cali.pkl --tgtidx 0 --r
 - qmatch
 - astroalign
 
-## 9. 版本信息
-
-- 版本：v0.1
-- 发布日期：2025-06-07
-- 作者：Dr/Prof Jie Zheng & Dr/Prof LinQiao Jiang
