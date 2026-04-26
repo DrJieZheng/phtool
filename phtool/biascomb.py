@@ -10,12 +10,14 @@ def biascomb(
     filelist, 
     biasfile, 
     combine_method="clip",
+    whenexist="autonum",
 ):
     """
     本底合并
     :param filelist: 本底文件列表
     :param biasfile: 合并后的文件
-    :param method: 合并方法
+    :param combine_method: 合并方法
+    :param whenexist: 当输出文件存在时怎么处理
     :return: 无
     """
 

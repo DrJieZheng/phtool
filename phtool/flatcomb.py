@@ -11,7 +11,8 @@ def flatcomb(
     biasfile, 
     flatfile, 
     combine_method="clip", 
-    norm_method="clip"
+    norm_method="clip",
+    whenexist="autonum",
     ):
     """
     平场合并
@@ -20,6 +21,7 @@ def flatcomb(
     :param masterflat: 合并后的平场
     :param method: 平场合并方法
     :param norm: 平场归一化方法
+    :param whenexist: 当输出文件存在时怎么处理
     :return: 无
     """
 

@@ -14,7 +14,7 @@ import os
 import glob
 import logging
 from .util import filename_split, ext_check
-version = "0.26.425"
+version = "0.26.426"
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -74,37 +74,36 @@ def pos_xy(coord_str):
         raise argparse.ArgumentTypeError(f"Cannot convert '{coord_str}' to a x,y position.")
 
 
+def set_logger(log_level="INFO"):
+    """
+    设置日志记录器
+    :param log_level: 日志级别
+    :return: 无
+    """
+    logger = logging.getLogger("phtool_main")
+    # 新建一个控制台 Handler
+    ch = logging.StreamHandler()
+    ch.setLevel(log_level) 
+    # 可选：设置格式
+    # fmt = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    # ch.setFormatter(fmt)
+    # 把 Handler 挂到 Logger 上
+    logger.addHandler(ch)
+    logger.setLevel(log_level)
+
+
+
 def main():
     """
     A cli tool to run the pipeline.
     """
     if len(sys.argv) == 1:
-        print("""Photometry Tools
+        print(f"""Photometry Tools (phtool) v{version}
 Usage:
     python -m phtool command arguments
     phtool command arguments
     import phtool; phtool.xxx(xxxx)
-Commands:
-    cutimage
-        py -m phtool cutimage
-    biascombine
-        py -m phtool biascombine
-    flatcombine
-        py -m phtool flatcombine
-    imcorrect
-        py -m phtool imcorrect
-    offset
-        py -m phtool offset
-    find
-        py -m phtool find
-    align
-        py -m phtool align
-    phot
-        py -m phtool phot
-    xyget
-        py -m phtool xyget
-    display
-        py -m phtool display
+Commands:  `phtool -h`  for detail help
 """)
     else:
         # cmd = _short_match_(sys.argv[1])
@@ -154,13 +153,13 @@ Commands:
             help="Site name, e.g. 'xinglong'")
         parser.add_argument("--sitecoord", type=str, nargs="?", default="117.55,40.40",
             help="Site coordinate, e.g. '117.55,40.40' or '117:33:01,40:28:23'")
-        parser.add_argument("--offset", type=str, nargs="?", default=None,
+        parser.add_argument("--offsetfile", type=str, nargs="?", default=None,
             help="Offset file")
         parser.add_argument("--baseix", type=int, nargs="?", default=0,
             help="Base image index for offset")
         parser.add_argument("--maxoffset", type=int, nargs="?", default=500,
             help="Max offset for offset")
-        parser.add_argument("--align", type=str, nargs="?", default=None,
+        parser.add_argument("--alignfile", type=str, nargs="?", default=None,
             help="Align file")
         parser.add_argument("--apers", type=float, nargs="*", default=[-2.5],
             help="Aperture(s) for photometry")
@@ -188,16 +187,7 @@ Commands:
         args = parser.parse_args()
 
         # 配置日志
-        logger = logging.getLogger("phtool_main")
-        # 新建一个控制台 Handler
-        ch = logging.StreamHandler()
-        ch.setLevel(args.log)              # 让 Handler 也接受 DEBUG 级别
-        # 可选：设置格式
-        # fmt = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        # ch.setFormatter(fmt)
-        # 把 Handler 挂到 Logger 上
-        logger.addHandler(ch)
-        logger.setLevel(args.log)
+        set_logger(args.log)
 
         # logging.debug(f"{args}")
         # 解析命令
@@ -214,25 +204,28 @@ Commands:
             efiles.extend(glob.glob(os.path.expanduser(f)))
         efiles.sort()
 
+        # 根据提供的任务逐个选择调用对应的函数
         if task == "cutimage":
             # 截取图像
             from .cutimage import cutimage
-            # print(task, args.show_x, args.show_y, args.out_dir)
-            cutimage(efiles, args.out_dir, args.cut_x, args.cut_y, args.cut_w, args.cut_h)
+            cutimage(efiles, out_dir=args.out_dir, 
+                cut_x=args.cut_x, cut_y=args.cut_y, cut_w=args.cut_w, cut_h=args.cut_h, 
+                whenexist=args.whenexist)
         elif task == "biascombine":
             # 合并本底
             # 处理合并后的文件名
             biasfile = _out_dir_file_(args.bias, "BIAS", ".fits")
             from .biascomb import biascomb
-            # print(task, efiles, biasfile, args.combine)
-            biascomb(efiles, args.bias, args.combine)
+            biascomb(efiles, biasfile=biasfile, combine=args.combine, 
+                whenexist=args.whenexist)
         elif task == "flatcombine":
             # 处理合并后的文件名
             biasfile = _out_dir_file_(args.bias, "BIAS", ".fits")
             flatfile = _out_dir_file_(args.flat, "FLAT", ".fits")
             from .flatcomb import flatcomb
-            # print(task, efiles, biasfile, flatfile, args.combine, args.norm)
-            flatcomb(efiles, biasfile, flatfile, args.combine, args.norm)
+            flatcomb(efiles, biasfile=biasfile, flatfile=flatfile, 
+                combine=args.combine, norm=args.norm, 
+                whenexist=args.whenexist)
         elif task == "imcorrect":
             # 处理合并后的文件名
             biasfile = _out_dir_file_(args.bias, "BIAS", ".fits")
@@ -242,42 +235,49 @@ Commands:
             sitename = args.sitename
             sitecoord = args.sitecoord
             from .imcorr import imcorr
-            # print(task, efiles, biasfile, flatfile, args.out_dir)
-            imcorr(efiles, biasfile, flatfile, args.out_dir, 
+            imcorr(efiles, biasfile=biasfile, flatfile=flatfile, 
+                out_dir=args.out_dir, 
                 keyradec=keyradec, radec=radec, 
-                sitename=sitename, sitecoord=sitecoord)
+                sitename=sitename, sitecoord=sitecoord,
+                whenexist=args.whenexist)
         elif task == "offset":
             # 处理偏移文件
             baseix = args.baseix
             maxoffset = args.maxoffset
-            offsetfile = _out_dir_file_(args.offset, "offset", ".txt")
+            offsetfile = _out_dir_file_(args.offsetfile, "offset", ".txt")
             from .offset import offset
-            offset(efiles, offsetfile, baseix, maxoffset)
+            offset(efiles, offsetfile=offsetfile,
+                baseix=baseix, maxoffset=maxoffset, 
+                whenexist=args.whenexist)
         elif task == "find":
             # 找源，暂无其他参数
             from .find import find
-            find(efiles)
+            find(efiles, whenexist=args.whenexist)
         elif task == "align":
             # 图像对齐
             baseix = args.baseix
-            alignfile = _out_dir_file_(args.align, "align", ".pkl")
+            alignfile = _out_dir_file_(args.alignfile, "align", ".pkl")
             from .align import align
-            align(efiles, alignfile, baseix)
+            align(efiles, alignfile=alignfile, baseix=baseix, 
+                whenexist=args.whenexist)
         elif task == "phot":
             # 找源，暂无其他参数
             from .phot import phot
-            phot(efiles, apers=args.apers)
+            phot(efiles, apers=args.apers,
+                whenexist=args.whenexist)
         elif task == "xyget":
             # 选择目标星
             baseix = args.baseix
             pickbox = args.pickbox
             xyfile = args.xyfile
             from .xyget import xyget
-            xyget(efiles, baseix=baseix, pickbox=pickbox, xyfile=xyfile, display=True)
+            xyget(efiles, baseix=baseix, pickbox=pickbox, xyfile=xyfile, display=True, 
+                whenexist=args.whenexist)
         elif task == "display":
             # 显示图像，并根据需要截取部分区域，进行人工选星
             from .disp import disp
-            disp(efiles, show_x=args.show_x, show_y=args.show_y, show_n=args.show_n)
+            disp(efiles, show_x=args.show_x, show_y=args.show_y, show_n=args.show_n,
+                whenexist=args.whenexist)
         elif task == "pick":
             # 选择目标星
             baseix = args.baseix
@@ -286,7 +286,8 @@ Commands:
             xyfile = args.xyfile
             pickbox = args.pickbox
             from .pick import pick
-            pick(efiles, baseix=baseix, pickfile=pickfile, alignfile=alignfile, pickbox=pickbox, xyfile=xyfile)
+            pick(efiles, baseix=baseix, pickfile=pickfile, alignfile=alignfile, xyfile=xyfile, 
+                pickbox=pickbox, whenexist=args.whenexist)
         elif task == "diffcali":
             # 差校
             pickfile = _out_dir_file_(args.pickfile, "pick", ".pkl")
@@ -295,7 +296,9 @@ Commands:
             refidx = args.refidx
             chkidx = args.chkidx
             from .diffcali import diffcali
-            diffcali(pickfile=pickfile, califile=califile, tgt_idx=tgtidx, ref_idx=refidx, chk_idx=chkidx)
+            diffcali(pickfile=pickfile, califile=califile, 
+                tgt_idx=tgtidx, ref_idx=refidx, chk_idx=chkidx,
+                whenexist=args.whenexist)
             
 
 if __name__ == "__main__":

@@ -11,6 +11,7 @@ def offset(
     offsetfile,
     baseix=0,
     maxoffset=500,
+    whenexist="autonum",
 ):
     """
     图像对齐
@@ -18,6 +19,7 @@ def offset(
     :param offsetfile: 偏移文件
     :param baseix: 基准图像索引
     :param maxoffset: 最大偏移
+    :param whenexist: 当输出文件存在时怎么处理
     :return: 无
     """
 

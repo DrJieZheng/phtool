@@ -15,6 +15,7 @@ def imcorr(
     radec=None,
     sitename="xinglong",
     sitecoord="117.55,40.40",
+    whenexist="autonum",
 ):
     """
     本底平场改正
@@ -25,6 +26,7 @@ def imcorr(
     :param radec: 坐标
     :param sitename: 观测地点
     :param sitecoord: 观测地点坐标
+    :param whenexist: 当输出文件存在时怎么处理
     :return: 无
     """
 

@@ -11,8 +11,9 @@ def pick(
     alignfile,
     pickfile,
     baseix=0,
-    pickbox=20,
     xyfile=None,
+    pickbox=20,
+    whenexist="autonum",
 ):
     """
     从找到的源中选出想要进行后续较差分析的源
@@ -20,8 +21,9 @@ def pick(
     :param alignfile: 对齐文件
     :param pickfile: 星等文件
     :param baseix: 基准图像索引
-    :param pickbox: 选源范围
     :param xyfile: 源位置文件
+    :param pickbox: 选源范围
+    :param whenexist: 当输出文件存在时怎么处理
     :return: 无
     """
 

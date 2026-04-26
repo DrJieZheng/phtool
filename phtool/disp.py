@@ -36,6 +36,7 @@ def disp(
     show_x=None,
     show_y=None,
     show_n=25,
+    whenexist="autonum",
 ):
     """
     找源
@@ -43,6 +44,8 @@ def disp(
     :param show_x: 显示图像的x范围（默认None）
     :param show_y: 显示图像的y范围（默认None）
     :param show_n: 显示图像中源的数量（默认25）
+    :param whenexist: 当输出文件存在时怎么处理，这个模块实际上用不上，只是保留一致而已
+    :return: None
     """
 
     from .util import filename_split, pkl_dump, pkl_load

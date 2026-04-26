@@ -10,12 +10,14 @@ def align(
     filelist, 
     alignfile,
     baseix=0,
+    whenexist="autonum",
 ):
     """
     图像对齐
     :param filelist: 待对齐的文件列表
     :param alignfile: 偏移文件
     :param baseix: 基准图像索引
+    :param whenexist: 当输出文件存在时怎么处理
     :return: 无
     """
 

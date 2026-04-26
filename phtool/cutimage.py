@@ -15,6 +15,7 @@ def cutimage(
     cut_y=None,
     cut_w=None,
     cut_h=None,
+    whenexist="autonum",
 ):
     """
     找源
@@ -24,6 +25,7 @@ def cutimage(
     :param cut_y: 截取图像的y范围（默认None）
     :param cut_w: 截取图像的宽度（默认None）
     :param cut_h: 截取图像的高度（默认None）
+    :param whenexist: 当输出文件存在时怎么处理
     :return: None
     """
 

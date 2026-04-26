@@ -12,6 +12,7 @@ def diffcali(
     tgt_idx,
     ref_idx,
     chk_idx,
+    whenexist="autonum",
     ):
     """
     进行较差分析并输出较差结果
@@ -20,6 +21,7 @@ def diffcali(
     :param tgt_idx: 目标星索引
     :param ref_idx: 参考星索引
     :param chk_idx: 检查星索引
+    :param whenexist: 当输出文件存在时怎么处理
     :return: 无
     """
 

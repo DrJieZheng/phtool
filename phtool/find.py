@@ -8,10 +8,12 @@
 
 def find(
     filelist, 
+    whenexist="autonum",
 ):
     """
     找源
     :param filelist: 待找源的文件列表
+    :param whenexist: 当输出文件存在时怎么处理
     :return: 无
     """
 

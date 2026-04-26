@@ -12,6 +12,7 @@ def xyget(
     pickbox=20,
     xyfile=None,
     display=False,
+    whenexist="autonum",
 ):
     """
     找源
@@ -20,6 +21,7 @@ def xyget(
     :param pickbox: 选源范围
     :param xyfile: 选源结果文件
     :param display: 是否最后在屏幕显示结果，适用于从终端调用的情况
+    :param whenexist: 当输出文件存在时怎么处理
     :return: 选中的源的x、y数组
     """
 
@@ -29,10 +31,6 @@ def xyget(
     import astropy.io.fits as fits
     import matplotlib.pyplot as plt
     import os
-    import glob
-    from photutils.background import Background2D, MMMBackground
-    from photutils.aperture import CircularAperture, aperture_photometry
-    from astropy.stats import sigma_clipped_stats
     from matplotlib.widgets import Button, Slider
 
     logger = logging.getLogger("phtool_main")

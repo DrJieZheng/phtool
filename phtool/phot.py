@@ -9,11 +9,13 @@
 def phot(
     filelist,
     apers,
+    whenexist="autonum",
 ):
     """
     找源
     :param filelist: 待测光的文件列表
     :param apers: 测光孔径
+    :param whenexist: 当输出文件存在时怎么处理
     :return: 无
     """
 
