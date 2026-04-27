@@ -38,7 +38,10 @@ def offset(
     base_x, base_y = qmatch.mean_xy(fits.getdata(filelist[baseix]))
     # 文件数
     nf = len(filelist)
-
+    
+    # 文件名的最大宽度，仅用于确保输出整齐
+    maxn = max(len(filename_split(f)[1]) for f in filelist)
+    
     # xy offset array
     offset_x = np.empty(nf, int)
     offset_y = np.empty(nf, int)
@@ -55,14 +58,13 @@ def offset(
         # mjd of obs
         bjd[i] = fits.getval(fc, "BJD")
 
-        logger.debug(f"{i+1:03d}/{nf:03d}: "
-                   f"{bjd[i]:12.7f}  {offset_x[i]:+5d} {offset_y[i]:+5d}  "
-                   f"{bf}")
+        logger.debug(f"{i+1:03d}/{nf:03d} {bf:{maxn}s}: "
+                   f"{bjd[i]:12.7f}  {offset_x[i]:+5d} {offset_y[i]:+5d}")
 
     # 保存offset数据
     with open(offsetfile, "w") as ff:
         for d, x, y, fc in zip(bjd, offset_x, offset_y, filelist):
-            ff.write(f"{d:12.7f}  {x:+5d} {y:+5d}  {filename_split(fc)[1]}\n")
+            ff.write(f"{d:12.7f}  {x:+5d} {y:+5d}  {bf:{maxn}s}\n")
     offset_pkl = os.path.splitext(offsetfile)[0] + ".pkl"
     pkl_dump(offset_pkl, bjd, offset_x, offset_y, filelist)
     logger.debug(f"Writing {offset_pkl}")

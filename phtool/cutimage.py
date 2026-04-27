@@ -41,7 +41,10 @@ def cutimage(
     logger = logging.getLogger("phtool_main")
     # 逐个进行平场改正
     os.makedirs(out_dir, exist_ok=True)
-    maxn = max(len(fn) for fn in filelist)
+
+    # 文件名的最大宽度，仅用于确保输出整齐
+    maxn = max(len(filename_split(f)[1]) for f in filelist)
+
     for f in filelist:
         # 读取文件
         with fits.open(f, verify="ignore") as hdul:

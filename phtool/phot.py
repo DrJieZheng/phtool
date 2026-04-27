@@ -33,6 +33,11 @@ def phot(
     # 让apers是数组
     if isinstance(apers, (int, float)):
         apers = [apers]
+    
+    nf = len(filelist)
+    # 文件数的最大宽度，仅用于确保输出整齐
+    maxn = max(len(filename_split(f)[1]) for f in filelist)
+    
     n_aper = len(apers)
     for k, f in enumerate(filelist):
         # 加载数据
@@ -66,4 +71,4 @@ def phot(
         phot_pkl_file = os.path.join(p, bf + "_phot.pkl")
         pkl_dump(phot_pkl_file, sources, fwhms_med, apers, real_aper)
         # 输出日志
-        logger.debug(f"{bf}--> {len(sources)} Sources FWHM={fwhms_med:5.2f} pix")
+        logger.debug(f"{k+1:03d}/{nf:03d} {bf:{maxn}s} -->  {len(sources)} Sources FWHM={fwhms_med:5.2f} pix")

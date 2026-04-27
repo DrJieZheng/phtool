@@ -60,6 +60,9 @@ def imcorr(
         sitelon, sitelat = 117.55, 40.40
     site = EarthLocation(lon=sitelon, lat=sitelat)
 
+    # 文件名的最大宽度，仅用于确保输出整齐
+    maxn = max(len(filename_split(f)[1]) for f in filelist)
+
     # 逐个进行平场改正
     os.makedirs(out_dir, exist_ok=True)
     for f in filelist:
@@ -116,7 +119,8 @@ def imcorr(
             hdr["DEC"] = coord.dec.to_string(unit=u.deg, sep=":",precision=1)
             hdr["BJD"] = bjd.tdb.jd
         else:
-            hdr["BJD"] = np.nan
+            logger.warning(f"No coordinate in {f}, set BJD to 0.")
+            hdr["BJD"] = 0
         hdr["JD"] = obs_jd.jd
         hdr["MJD"] = obs_jd.mjd
         # 观测时的太阳月亮信息
@@ -137,4 +141,4 @@ def imcorr(
         p, fn, suff, e = filename_split(f)
         f_corr = os.path.join(out_dir, fn+"_corr"+e)
         fits.writeto(f_corr, dat_corr, hdr, overwrite=True)
-        logger.info(f"Correct {f} -> {f_corr}")
+        logger.info(f"Correct {fn:{maxn}s} -> {f_corr}")

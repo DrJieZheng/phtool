@@ -41,6 +41,14 @@ def find(
     # 标准差转半高全宽
     std2fwhm = 2 * np.sqrt(2 * np.log(2))
 
+    nf = len(filelist)
+    if nf == 0:
+        logger.error("No file to find.")
+        return
+    
+    # 文件名的最大宽度，仅用于确保输出整齐
+    maxn = max(len(filename_split(f)[1]) for f in filelist)
+
     for k, f in enumerate(filelist):
         # 加载数据
         data = fits.getdata(f)
@@ -112,7 +120,7 @@ def find(
         star_pkl_file = os.path.join(p, bf + "_stars.pkl")
         pkl_dump(star_pkl_file, sources, fwhms, fwhms_med)
         # 输出日志
-        logger.debug(f"{bf}--> {len(sources)} Sources FWHM={fwhms_med:5.2f} pix")
+        logger.debug(f"{k+1:03d}/{nf:03d} {bf:{maxn}s} --> {len(sources):4d} Sources FWHM={fwhms_med:5.2f} pix")
 
         # positions = np.transpose((sources['xcentroid'], sources['ycentroid']))
         # circ = CircularAperture(positions, r=2 * fwhms_med)
@@ -125,5 +133,5 @@ def find(
             facecolors="none", edgecolors="r",
         )
         png_file = os.path.join(p, bf + "_stars.png")
-        ax.set_title(f"{bf}--> {len(sources)} Sources FWHM={fwhms_med:5.2f} pix")
+        ax.set_title(f"{bf} : {len(sources)} Sources FWHM={fwhms_med:5.2f} pix")
         plt.savefig(png_file)

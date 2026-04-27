@@ -14,7 +14,7 @@ import os
 import glob
 import logging
 from .util import filename_split, ext_check
-version = "0.26.427"
+version = "0.26.428"
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -216,7 +216,7 @@ Commands:  `phtool -h`  for detail help
             # 处理合并后的文件名
             biasfile = _out_dir_file_(args.bias, "BIAS", ".fits")
             from .biascomb import biascomb
-            biascomb(efiles, biasfile=biasfile, combine=args.combine, 
+            biascomb(efiles, biasfile=biasfile, combine_method=args.combine, 
                 whenexist=args.whenexist)
         elif task == "flatcombine":
             # 处理合并后的文件名
@@ -224,7 +224,7 @@ Commands:  `phtool -h`  for detail help
             flatfile = _out_dir_file_(args.flat, "FLAT", ".fits")
             from .flatcomb import flatcomb
             flatcomb(efiles, biasfile=biasfile, flatfile=flatfile, 
-                combine=args.combine, norm=args.norm, 
+                combine_method=args.combine, norm_method=args.norm, 
                 whenexist=args.whenexist)
         elif task == "imcorrect":
             # 处理合并后的文件名
@@ -282,7 +282,7 @@ Commands:  `phtool -h`  for detail help
             # 选择目标星
             baseix = args.baseix
             pickfile = _out_dir_file_(args.pickfile, "pick", ".pkl")
-            alignfile = _out_dir_file_(args.align, "align", ".pkl")
+            alignfile = _out_dir_file_(args.alignfile, "align", ".pkl")
             xyfile = args.xyfile
             pickbox = args.pickbox
             from .pick import pick
