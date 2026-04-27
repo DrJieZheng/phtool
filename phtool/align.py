@@ -27,6 +27,7 @@ def align(
     import astropy.io.fits as fits
     import os
     import astroalign as aa
+    import qmatch
     from astropy.stats import sigma_clipped_stats
 
     logger = logging.getLogger("phtool_main")
@@ -59,7 +60,7 @@ def align(
         # mjd of obs
         bjd[k] = fits.getval(fc, "BJD")
         try:
-            tr, (k_ix, b_ix) = aa.find_transform(k_xy, b_xy)
+            tr, (k_xym, b_xym) = aa.find_transform(k_xy, b_xy)
         except:
             logger.error(f"{k+1:03d}/{nf:03d}: {bjd[k]-245000:10.7f} Failed to align {bf}")
             trans.append(None)
@@ -68,13 +69,20 @@ def align(
             mag_diff_std[k] = np.nan
             continue
         trans.append(tr)
-
-        # 计算两图之间的零点差
-        # mag_diff = b_mag[b_ix] - k_mag[k_ix]
-        # mag_diff_med[k], _, mag_diff_std[k] = sigma_clipped_stats(mag_diff)
+        # 找出匹配到的源是原始源的哪一些
+        k_ix, k_ixm = qmatch.match2d(k_xy[:, 0], k_xy[:, 1], k_xym[:, 0], k_xym[:, 1], 0.1)
+        b_ix, b_ixm = qmatch.match2d(b_xy[:, 0], b_xy[:, 1], b_xym[:, 0], b_xym[:, 1], 0.1)
+        # 做下标转换，找到对应原始源的下标
+        k0 = np.zeros(len(k_ix), int)
+        b0 = np.zeros(len(b_ix), int)
+        k0[k_ixm] = b_ix
+        b0[b_ixm] = k_ix
+        # 计算零点差    
+        mag_diff = b_mag[b0] - k_mag[k0]
+        mag_diff_med[k], _, mag_diff_std[k] = sigma_clipped_stats(mag_diff)
 
         logger.debug(f"{k+1:03d}/{nf:03d}: {bjd[k]-245000:10.7f} "
-                   f"R {tr.rotation:+5.1f}  S {tr.scale:4.2f}  T ({tr.translation[0]:+6.1f} {tr.translation[1]:+6.1f}) "
+                   f"R {tr.rotation:+5.1f}  S {tr.scale:4.2f}  T ({tr.translation[0]:+7.1f} {tr.translation[1]:+7.1f}) "
                    f"M {mag_diff_med[k]:+6.2f}+-{mag_diff_std[k]:5.3f}"
                    f"  {bf}")
 

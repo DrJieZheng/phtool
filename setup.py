@@ -5,7 +5,7 @@ with open("readme.md", "r", encoding="utf-8") as ff:
 
 setuptools.setup(
     name='phtool',
-    version='0.26.426',
+    version='0.26.427',
     author='Dr/AssoProf Jie Zheng & Dr/Prof Lin-Qiao Jiang',
     author_email='jiezheng@nao.cas.cn',
     description='Photometry Tools', # short description

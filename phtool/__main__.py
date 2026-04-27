@@ -14,7 +14,7 @@ import os
 import glob
 import logging
 from .util import filename_split, ext_check
-version = "0.26.426"
+version = "0.26.427"
 
 import warnings
 warnings.filterwarnings('ignore')
